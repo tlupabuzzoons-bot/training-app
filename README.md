@@ -12,12 +12,36 @@ vybereš formát a stáhneš. Hotovo za pár sekund, rovnou připravené do stř
 Pod kapotou běží [yt-dlp](https://github.com/yt-dlp/yt-dlp) + [ffmpeg](https://ffmpeg.org),
 nad tím malý FastAPI server a jednostránkové webové UI.
 
-## Nejrychlejší spuštění (bez terminálu)
+## Instalace jedním kliknutím (pro celou tlupu)
 
-1. Stáhni repo (tlačítko **Code → Download ZIP** na GitHubu) a rozbal ho.
-2. Nainstaluj Python z https://www.python.org/downloads/ (na Windows zaškrtni *Add Python to PATH*).
-3. Nainstaluj ffmpeg: Mac `brew install ffmpeg`, Windows `winget install Gyan.FFmpeg`.
-4. Spusť **`start.sh`** (Mac/Linux) nebo poklepej na **`start.bat`** (Windows). Prohlížeč se otevře sám.
+### Mac
+
+1. Stáhni [**Instalace-BUZZOONS-Downloader-Mac.zip**](https://github.com/tlupabuzzoons-bot/training-app/raw/claude/blissful-albattani-5oyzkb/installers/Instalace-BUZZOONS-Downloader-Mac.zip). Safari ho sám rozbalí na soubor `Instalace-BUZZOONS-Downloader.command` ve Stažených.
+2. Poklepej na něj. Mac zobrazí varování, že soubor je od neznámého vývojáře. Otevři **Nastavení systému → Soukromí a zabezpečení**, sjeď dolů a klikni **Přesto otevřít**. (Na starším macOS stačí pravý klik → Otevřít.)
+3. Otevře se Terminál a všechno proběhne samo: Homebrew, Python, ffmpeg, appka. Když si Mac vyžádá heslo, zadej ho. Trvá to 3 až 10 minut.
+4. Na konci se na Ploše objeví ikona **BUZZOONS Downloader** a stránka se sama otevře.
+
+Alternativa bez stahování souboru: otevři Terminál, vlož tenhle řádek a stiskni Enter.
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/tlupabuzzoons-bot/training-app/claude/blissful-albattani-5oyzkb/installers/mac/Instalace-BUZZOONS-Downloader.command)
+```
+
+### Windows
+
+1. Stáhni [**Instalace-BUZZOONS-Downloader.bat**](https://github.com/tlupabuzzoons-bot/training-app/raw/claude/blissful-albattani-5oyzkb/installers/windows/Instalace-BUZZOONS-Downloader.bat) (pravý klik → Uložit odkaz jako, pokud se zobrazí jako text).
+2. Poklepej na něj. Windows zobrazí SmartScreen: klikni **Další informace → Přesto spustit**.
+3. Všechno proběhne samo přes winget (Python, ffmpeg, appka). Trvá to 3 až 10 minut.
+4. Na Ploše se objeví zástupce **BUZZOONS Downloader** a stránka se sama otevře.
+
+### Používání
+
+- Klik na ikonu na Ploše spustí appku na pozadí a otevře stránku v prohlížeči.
+- Zavřením panelu v prohlížeči (nebo tlačítkem **Vypnout** na stránce) se appka sama vypne. Rozdělané stahování nechá doběhnout.
+- Instalátor jde spustit znovu kdykoliv, jen appku aktualizuje. Knihovna yt-dlp se navíc tiše aktualizuje při každém spuštění.
+- Vše běží jen na tvém počítači (adresa 127.0.0.1). Nikdo jiný nevidí, co stahuješ.
+
+Kde to je: appka v `~/Library/Application Support/BUZZOONS Downloader` (Mac) nebo `%LOCALAPPDATA%\BUZZOONS Downloader` (Windows), logy v `~/Library/Logs/` (Mac) nebo ve stejné složce jako appka (Windows).
 
 ## Spuštění ručně z terminálu
 
