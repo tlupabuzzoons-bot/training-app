@@ -12,7 +12,14 @@ vybereš formát a stáhneš. Hotovo za pár sekund, rovnou připravené do stř
 Pod kapotou běží [yt-dlp](https://github.com/yt-dlp/yt-dlp) + [ffmpeg](https://ffmpeg.org),
 nad tím malý FastAPI server a jednostránkové webové UI.
 
-## Spuštění lokálně
+## Nejrychlejší spuštění (bez terminálu)
+
+1. Stáhni repo (tlačítko **Code → Download ZIP** na GitHubu) a rozbal ho.
+2. Nainstaluj Python z https://www.python.org/downloads/ (na Windows zaškrtni *Add Python to PATH*).
+3. Nainstaluj ffmpeg: Mac `brew install ffmpeg`, Windows `winget install Gyan.FFmpeg`.
+4. Spusť **`start.sh`** (Mac/Linux) nebo poklepej na **`start.bat`** (Windows). Prohlížeč se otevře sám.
+
+## Spuštění ručně z terminálu
 
 Potřebuješ Python 3.11+ a `ffmpeg` v PATH (`brew install ffmpeg` / `apt install ffmpeg`).
 
