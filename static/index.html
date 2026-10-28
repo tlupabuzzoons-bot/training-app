@@ -18,6 +18,15 @@
     color:var(--text);min-height:100vh}
   .wrap{max-width:820px;margin:0 auto;padding:48px 20px 80px}
   header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+  header .grow{flex:1}
+  .btn-off{background:var(--panel2);color:var(--muted);border:1px solid var(--line);padding:9px 14px;font-size:13px;white-space:nowrap}
+  .btn-off:hover{color:var(--red);border-color:var(--red)}
+  .overlay{position:fixed;inset:0;background:rgba(5,9,6,.92);display:none;place-items:center;z-index:50;text-align:center;padding:20px}
+  .overlay.show{display:grid}
+  .overlay .box{max-width:420px}
+  .overlay .big{font-size:64px}
+  .overlay h3{margin:12px 0 6px;font-size:22px}
+  .overlay p{color:var(--muted);line-height:1.5;margin:0}
   header .logo{font-size:40px;line-height:1}
   header h1{margin:0;font-size:28px;letter-spacing:-.5px}
   header h1 span{color:var(--green)}
@@ -77,6 +86,8 @@
       <h1>BUZZOONS <span>Downloader</span></h1>
       <p>Hoď sem odkaz z YouTube, Instagramu nebo TikToku a vyber, co chceš ven. 🎥✨</p>
     </div>
+    <div class="grow"></div>
+    <button class="btn-off" id="off" type="button" title="Ukončí appku běžící na pozadí" hidden>⏻ Vypnout</button>
   </header>
 
   <form class="card" id="form" autocomplete="off">
@@ -125,6 +136,11 @@
   <footer>Stahuj jen obsah, na který máš práva. 🐒💚</footer>
 </div>
 <div class="toast" id="toast"></div>
+<div class="overlay" id="overlay"><div class="box">
+  <div class="big">🐒💤</div>
+  <h3 id="ovTitle">Appka je vypnutá</h3>
+  <p id="ovText">Tenhle panel můžeš zavřít. Až budeš chtít stahovat znovu, klikni na ikonu BUZZOONS Downloader na ploše.</p>
+</div></div>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -232,7 +248,26 @@ jobsEl.addEventListener('click', async e => {
   const id = e.target.dataset.del; if(!id) return;
   await fetch('/api/jobs/'+id,{method:'DELETE'}); refresh();
 });
-(async function loop(){ const busy = await refresh(); setTimeout(loop, busy ? 1000 : 5000); })();
+// --- zivotni cyklus: ping / zavreni panelu / vypnuti ---
+let autoShutdown = false, offlineStrikes = 0, stopped = false;
+function showOff(title, text){ stopped = true; if(title) $('#ovTitle').textContent = title; if(text) $('#ovText').textContent = text; $('#overlay').classList.add('show'); }
+async function ping(){
+  if(stopped) return;
+  try{
+    const r = await fetch('/api/ping',{method:'POST'}); const d = await r.json();
+    autoShutdown = !!d.auto_shutdown; $('#off').hidden = !autoShutdown; offlineStrikes = 0;
+  }catch{
+    if(++offlineStrikes >= 3) showOff('Appka neběží', 'Spojení se serverem se ztratilo. Klikni na ikonu BUZZOONS Downloader na ploše a stránka zase naběhne.');
+  }
+}
+ping(); setInterval(ping, 5000);
+window.addEventListener('pagehide', () => { if(autoShutdown && !stopped && navigator.sendBeacon) navigator.sendBeacon('/api/bye'); });
+$('#off').addEventListener('click', async () => {
+  if(!confirm('Vypnout appku? Rozdělaná stahování se ztratí.')) return;
+  try{ await fetch('/api/shutdown',{method:'POST'}); }catch{}
+  showOff();
+});
+(async function loop(){ if(stopped) return; const busy = await refresh(); setTimeout(loop, busy ? 1000 : 5000); })();
 </script>
 </body>
 </html>

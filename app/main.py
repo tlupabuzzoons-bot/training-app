@@ -2,14 +2,16 @@
 from __future__ import annotations
 
 import asyncio
+import shutil
+import subprocess
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from . import downloader
+from . import downloader, lifecycle
 
 app = FastAPI(title="BUZZOONS Downloader", version="1.0.0")
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -28,6 +30,42 @@ class DownloadRequest(BaseModel):
 @app.on_event("startup")
 def _startup() -> None:
     downloader.start_cleanup()
+    lifecycle.start()
+
+
+@app.get("/api/health")
+def health() -> dict:
+    import yt_dlp
+    ffmpeg = shutil.which("ffmpeg")
+    ffmpeg_version = None
+    if ffmpeg:
+        out = subprocess.run([ffmpeg, "-version"], capture_output=True, text=True).stdout
+        ffmpeg_version = out.split("\n", 1)[0].replace("ffmpeg version ", "").split(" ")[0]
+    return {
+        "ok": bool(ffmpeg),
+        "ffmpeg": ffmpeg,
+        "ffmpeg_version": ffmpeg_version,
+        "yt_dlp": yt_dlp.version.__version__,
+        "auto_shutdown": lifecycle.ENABLED,
+    }
+
+
+@app.post("/api/ping")
+def ping() -> dict:
+    lifecycle.ping()
+    return {"ok": True, "auto_shutdown": lifecycle.ENABLED}
+
+
+@app.post("/api/bye")
+def bye() -> Response:
+    lifecycle.bye()
+    return Response(status_code=204)
+
+
+@app.post("/api/shutdown")
+def shutdown() -> dict:
+    lifecycle.shutdown(force=True)
+    return {"ok": True}
 
 
 @app.get("/")
